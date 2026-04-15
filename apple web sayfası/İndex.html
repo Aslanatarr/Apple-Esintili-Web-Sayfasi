@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apple Store</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            padding-top: 80px; 
+            background-color: #f9fafb;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .sabit-ust-cubuk {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            z-index: 30;
+        }
+
+        .gezinme-cubugu {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+        }
+        
+        .menu-baglantilari {
+            display: none;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 24px;
+            font-size: 18px;
+        }
+        .menu-baglantilari li a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s;
+        }
+        .menu-baglantilari li a:hover {
+            color: #6b7280;
+        }
+
+        .sepet-ikon-kapsayici {
+            position: relative;
+            cursor: pointer;
+            color: inherit;
+        }
+        .sepet-ikon-kapsayici:hover {
+            color: #6b7280;
+        }
+
+        .sepet-adet {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc2626;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 9999px;
+            height: 20px;
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-butonu {
+            font-size: 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: inherit;
+        }
+        .menu-butonu:hover {
+            color: #6b7280;
+        }
+
+        .sepet-paneli {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            width: 320px;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 16px;
+            z-index: 40;
+            display: none; 
+        }
+        .sepet-paneli.aktif {
+            display: block;
+        }
+        
+        .sepet-urunleri {
+            max-height: 240px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+
+        .sepet-alt-kisim {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #d1d5db;
+        }
+
+        .odeme-butonu {
+            width: 100%;
+            margin-top: 12px;
+            padding: 8px;
+            background-color: black;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .odeme-butonu:hover {
+            background-color: #374151;
+        }
+
+        .anasayfa-bolumu {
+            position: relative;
+            background-color: black;
+            color: white;
+            padding: 80px 0;
+        }
+
+        .anasayfa-arkaplan {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+        }
+
+        .anasayfa-icerik {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+        .anasayfa-icerik h2 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .anasayfa-icerik p {
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+
+        .anasayfa-butonu {
+            padding: 12px 32px;
+            background-color: white;
+            color: black;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-size: 18px;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+        .anasayfa-butonu:hover {
+            background-color: #d1d5db;
+        }
+
+        .urun-izgarasi {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 40px;
+            background-color: #f3f4f6;
+        }
+
+        .urun-karti {
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .urun-karti:hover {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .urun-karti img {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .urun-karti h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .urun-karti p {
+            color: #4b5563;
+            margin-top: 8px;
+        }
+        .urun-karti .fiyat {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .sepete-ekle-butonu {
+            margin-top: 16px;
+            padding: 8px 24px;
+            background-color: black;
+            color: white;
+            border-radius: 9999px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .sepete-ekle-butonu:hover {
+            background-color: #374151;
+        }
+
+        .sss-bolumu {
+            padding: 40px;
+            background-color: white;
+        }
+        .sss-bolumu h2 {
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .sss-kapsayici {
+            max-width: 100%;
+            margin-left: 5%;
+            margin-right: 5%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sss-detay {
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .sss-baslik {
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+        }
+        .sss-baslik::before {
+            content: "+ "; 
+            margin-right: 8px;
+        }
+        .sss-detay[open] .sss-baslik::before {
+            content: "- "; 
+        }
+
+        .sss-cevap {
+            margin-top: 12px;
+            color: #4b5563;
+        }
+
+        .alt-bilgi {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 32px 0;
+        }
+        .alt-bilgi p {
+            margin: 4px 0;
+        }
+        .alt-bilgi .alt-metin {
+            color: #9ca3af;
+        }
+
+        .iletisim-div {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 40px auto;
+        }
+
+        .iletisim-div h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #6a8eff;
+            box-shadow: 0 0 0 3px rgba(106, 142, 255, 0.2);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .gonder-btn {
+            width: 100%;
+            padding: 14px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gonder-btn:active {
+            transform: scale(0.9);
+        }
+        
+        @media (min-width: 768px) {
+            .gezinme-cubugu {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+            .menu-baglantilari {
+                display: flex;
+            }
+            .menu-butonu {
+                display: none;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .urun-izgarasi {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sabit-ust-cubuk">
+        <nav class="gezinme-cubugu">
+            <h1 style="font-size: 24px; font-weight: bold;">Apple Store</h1>
+
+            <ul class="menu-baglantilari">
+                <li><a href="#urunler">Ürünler</a></li>
+                <li><a href="#sss">SSS</a></li>
+                <li><a href="#iletisim">İletişim</a></li>
+            </ul>
+
+            <div class="sepet-ikon-kapsayici" onclick="sepetPaneliniAcKapat()">
+                <span style="font-size: 24px;">🛒</span> 
+                <span id="sepet-adet-sayisi" class="sepet-adet">0</span>
+            </div>
+
+            <button class="menu-butonu">[MENU]</button>
+        </nav>
+    </header>
+
+    <div id="sepet-paneli" class="sepet-paneli">
+        <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Sepetim</h3>
+        <div id="sepet-urun-listesi" class="sepet-urunleri">
+            <p style="color: #6b7280;">Sepetiniz boş.</p>
+        </div>
+
+        <div class="sepet-alt-kisim">
+            <p style="font-size: 18px; font-weight: bold; display: flex; justify-content: space-between;">Toplam: <span id="sepet-toplam-fiyat">0 TL</span></p>
+            <button onclick="odemeSayfasinaGit()" class="odeme-butonu">Ödeme Yap</button>
+        </div>
+    </div>
+
+    <section class="anasayfa-bolumu">
+        <div class="anasayfa-arkaplan" style="background-image: url('Images/hero.jpg');"></div>
+        <div class="anasayfa-icerik">
+            <h2>Apple Dünyasına Hoş Geldiniz</h2>
+            <p>Teknolojinin zirvesine çıkın.</p>
+            <a href="#urunler" class="anasayfa-butonu">Keşfet</a>
+        </div>
+    </section>
+
+    <section id="urunler" class="urun-izgarasi">
+        <div class="urun-karti">
+            <img src="Images/airpods.jpg" alt="AirPods">
+            <h2>AirPods</h2>
+            <p>Mükemmel kablosuz ses deneyimi.</p>
+            <p class="fiyat">5.500 TL</p>
+            <button onclick="sepeteUrunEkle('AirPods', 5500)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/İpad pro.jpg" alt="iPad Pro">
+            <h2>iPad Pro</h2>
+            <p>Güç ve yaratıcılık bir arada.</p>
+            <p class="fiyat">12.000 TL</p>
+            <button onclick="sepeteUrunEkle('iPad Pro', 12000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/macbook air.jpg" alt="MacBook Air">
+            <h2>MacBook Air</h2>
+            <p>Hafif, hızlı ve profesyonel.</p>
+            <p class="fiyat">25.000 TL</p>
+            <button onclick="sepeteUrunEkle('MacBook Air', 25000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/watch.jpg" alt="Apple Watch">
+            <h2>Apple Watch</h2>
+            <p>Sağlık ve stil her zaman bileğinde.</p>
+            <p class="fiyat">7.800 TL</p>
+            <button onclick="sepeteUrunEkle('Apple Watch', 7800)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/14 pro max.jpg" alt="iPhone 14 Pro Max">
+            <h2>iPhone 14 Pro Max</h2>
+            <p>Apple'ın en güçlü telefon deneyimi.</p>
+            <p class="fiyat">40.000 TL</p>
+            <button onclick="sepeteUrunEkle('iPhone 14 Pro Max', 40000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/Apple15.jpg" alt="iPhone 15 Pro Max">
+            <h2>iPhone 15 Pro Max</h2>
+            <p>Yeni nesil güç ve performans.</p>
+            <p class="fiyat">55.000 TL</p>
+            <button onclick="sepeteUrunEkle('iPhone 15 Pro Max', 55000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/17 pro max .png" alt="iPhone 17 Pro Max">
+            <h2>iPhone 17 Pro Max</h2>
+            <p>Daha büyük ekran, daha güçlü işlemci.</p>
+            <p class="fiyat">70.000 TL</p>
+            <button onclick="sepeteUrunEkle('iPhone 17 Pro Max', 70000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/16 pro max.jpg" alt="iPhone 16 Pro Max">
+            <h2>iPhone 16 Pro Max</h2>
+            <p>Efsanevi bir iPhone deneyimi.</p>
+            <p class="fiyat">62.000 TL</p>
+            <button onclick="sepeteUrunEkle('iPhone 16 Pro Max', 62000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+        
+        <div class="urun-karti">
+            <img src="Images/airpodsmax.jpg" alt="AirPods Max">
+            <h2>AirPods Max</h2>
+            <p>Zengin Hi-Fi ses deneyimi.</p>
+            <p class="fiyat">15.000 TL</p>
+            <button onclick="sepeteUrunEkle('AirPods Max', 15000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/mac mini.jpg" alt="Mac Mini">
+            <h2>Mac Mini</h2>
+            <p>Küçük boyut, büyük performans.</p>
+            <p class="fiyat">20.000 TL</p>
+            <button onclick="sepeteUrunEkle('Mac Mini', 20000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/mac studıo.jpg" alt="Mac Studio">
+            <h2>Mac Studio</h2>
+            <p>Profesyonel güç, kompakt tasarım.</p>
+            <p class="fiyat">50.000 TL</p>
+            <button onclick="sepeteUrunEkle('Mac Studio', 50000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+
+        <div class="urun-karti">
+            <img src="Images/vison.jpg" alt="Vision Pro">
+            <h2>Vision Pro</h2>
+            <p>Uzamsal bilgisayarın geleceği.</p>
+            <p class="fiyat">150.000 TL</p>
+            <button onclick="sepeteUrunEkle('Vision Pro', 150000)" class="sepete-ekle-butonu">Sepete Ekle</button>
+        </div>
+    </section>
+
+    <section id="sss" class="sss-bolumu">
+        <h2>Sıkça Sorulan Sorular</h2>
+        <div class="sss-kapsayici">
+            <details class="sss-detay">
+                <summary class="sss-baslik">Ürünler orijinal mi?</summary>
+                <p class="sss-cevap">Evet, tüm ürünler %100 orijinal ve garantilidir.</p>
+            </details>
+            <details class="sss-detay">
+                <summary class="sss-baslik">Kargo kaç günde gelir?</summary>
+                <p class="sss-cevap">Siparişler 1–3 iş günü içinde teslim edilir.</p>
+            </details>
+            <details class="sss-detay">
+                <summary class="sss-baslik">İade süresi nedir?</summary>
+                <p class="sss-cevap">14 gün içerisinde koşulsuz iade hakkınız bulunmaktadır.</p>
+            </details>
+            <details class="sss-detay">
+                <summary class="sss-baslik">Garanti süresi ne kadar?</summary>
+                <p class="sss-cevap">Tüm Apple ürünlerinde 2 yıl garanti sunulmaktadır.</p>
+            </details>
+        </div>
+    </section>
+
+    <div id="iletisim" class="iletisim-div">
+        <h2>Bize Ulaşın</h2>
+        <form>
+            <div class="form-group">
+                <label for="adsoyad">Ad Soyad</label>
+                <input type="text" id="adsoyad" name="adsoyad" placeholder="Adınız ve soyadınız" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="email" placeholder="ornek@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <label for="aciklama">Mesaj / Açıklama</label>
+                <textarea id="aciklama" name="aciklama" placeholder="Bize iletmek istediğiniz mesajı yazın..." required></textarea>
+            </div>
+            <button type="submit" class="gonder-btn">Gönder</button>
+        </form>
+    </div>
+
+    <footer class="alt-bilgi">
+        <p style="font-size: 18px;">Apple Website — 2025</p>
+        <p class="alt-metin">Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script>
+        let sepet = JSON.parse(localStorage.getItem('sepet')) || [];
+
+        function sepetPaneliniAcKapat() {
+            document.getElementById('sepet-paneli').classList.toggle('aktif');
+        }
+
+        function sepeteUrunEkle(urunAdi, fiyat) {
+            const varOlanUrun = sepet.find(urun => urun.name === urunAdi);
+            if (varOlanUrun) {
+                varOlanUrun.quantity++;
+            } else {
+                sepet.push({ name: urunAdi, price: fiyat, quantity: 1 });
+            }
+            sepetArayuzunuGuncelle();
+            localStorage.setItem('sepet', JSON.stringify(sepet));
+        }
+
+        function urunuSepettenCikar(urunAdi) {
+            const index = sepet.findIndex(urun => urun.name === urunAdi);
+            if (index !== -1) {
+                if (sepet[index].quantity > 1) {
+                    sepet[index].quantity--;
+                } else if (confirm(`${urunAdi} sepetten kaldırılsın mı?`)) {
+                    sepet.splice(index, 1);
+                }
+            }
+            sepetArayuzunuGuncelle();
+            localStorage.setItem('sepet', JSON.stringify(sepet));
+        }
+
+        function sepetArayuzunuGuncelle() {
+            const sepetUrunleriDiv = document.getElementById('sepet-urun-listesi');
+            const sepetAdetSpan = document.getElementById('sepet-adet-sayisi');
+            const sepetToplamSpan = document.getElementById('sepet-toplam-fiyat');
+
+            sepetUrunleriDiv.innerHTML = "";
+            let toplam = 0;
+            let toplamAdet = 0;
+
+            if (sepet.length === 0) {
+                sepetUrunleriDiv.innerHTML = '<p style="color: #6b7280;">Sepetiniz boş.</p>';
+            } else {
+                sepet.forEach(urun => {
+                    const urunToplam = urun.quantity * urun.price;
+                    toplam += urunToplam;
+                    toplamAdet += urun.quantity;
+
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.style.fontSize = '14px';
+                    div.style.marginBottom = '12px';
+
+                    div.innerHTML = `
+                        <div>
+                            <p style="font-weight: 600;">${urun.name} (${urun.quantity}x)</p>
+                            <p style="color: #4b5563;">${urun.price.toLocaleString('tr-TR')} TL</p>
+                        </div>
+                        <button onclick="urunuSepettenCikar('${urun.name}')" style="color: #ef4444; background: none; border: none; cursor: pointer; padding: 4px;">
+                            [🗑︎]
+                        </button>
+                    `;
+                    sepetUrunleriDiv.appendChild(div);
+                });
+            }
+
+            sepetAdetSpan.textContent = toplamAdet;
+            sepetToplamSpan.textContent = toplam.toLocaleString('tr-TR') + " TL";
+        }
+
+        document.addEventListener("DOMContentLoaded", sepetArayuzunuGuncelle);
+
+        function odemeSayfasinaGit() {
+            if (sepet.length === 0) {
+                alert("Sepet boş! Ödeme yapamazsınız.");
+                return;
+            }
+            window.location.href = 'odeme.html';
+        }
+    </script>
+</body>
+</html>

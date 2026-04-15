@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Sayfası - Apple Store</title>
+
+    <style>
+        body { 
+            font-family: Arial, Helvetica, sans-serif; 
+            background: #f9f9f9;
+            padding-top: 90px; 
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .sabit-ust-cubuk {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            z-index: 50;
+        }
+
+        .ust-cubuk-icerik {
+            max-width: 768px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+        }
+        .ust-cubuk-icerik h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .geri-don-baglantisi {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s;
+        }
+        .geri-don-baglantisi:hover {
+            color: #4b5563;
+        }
+        .geri-don-baglantisi span {
+            font-size: 20px;
+        }
+
+        .ana-kapsayici {
+            max-width: 768px;
+            margin: auto;
+            padding: 20px;
+        }
+        .ana-kapsayici h2 {
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .sepet-urunleri-kapsayici {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sepet-ogesi {
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .sepet-ogesi:hover { 
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+        }
+
+        .ogesi-resmi {
+            width: 112px;
+            height: 112px;
+            object-fit: contain;
+            border-radius: 16px;
+            border: 2px solid #f3f4f6;
+            background: #fff;
+        }
+
+        .ogesi-bilgi {
+            flex-grow: 1;
+        }
+        .ogesi-bilgi h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+        }
+        .ogesi-bilgi p {
+            color: #4b5563;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .ogesi-fiyat-toplam {
+            text-align: right;
+        }
+        .ogesi-fiyat-toplam p {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .odeme-kutusu {
+            margin-top: 40px;
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .toplam-gosterge {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        .odeme-butonu {
+            width: 100%;
+            padding: 20px;
+            background-color: black;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 16px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .odeme-butonu:hover {
+            background-color: #1f2937;
+        }
+
+        @media (max-width: 640px) {
+            .sepet-ogesi {
+                flex-direction: column;
+                text-align: center;
+            }
+            .ogesi-fiyat-toplam {
+                text-align: center;
+                margin-top: 16px;
+            }
+            .ust-cubuk-icerik {
+                padding: 16px;
+            }
+            .ana-kapsayici {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="sabit-ust-cubuk">
+    <div class="ust-cubuk-icerik">
+        <h1>Apple Store</h1>
+        <a href="index.html" class="geri-don-baglantisi">
+            <span>←</span> Alışverişe Dön
+        </a>
+    </div>
+</header>
+
+<main class="ana-kapsayici">
+    <h2>Ödeme Sayfası</h2>
+
+    <div id="sepet-urunleri" class="sepet-urunleri-kapsayici"></div>
+
+    <div class="odeme-kutusu">
+        <div class="toplam-gosterge">
+            Toplam: <span id="sepet-toplam">0 TL</span>
+        </div>
+        <button id="odeme-butonu" class="odeme-butonu">
+            Ödemeyi Tamamla
+        </button>
+    </div>
+</main>
+
+<script>
+    let sepet = JSON.parse(localStorage.getItem('sepet') || '[]');
+
+    const resimEsleme = {
+        "airpods": "airpods.jpg",
+        "ipad pro": "İpad pro.jpg",
+        "macbook air": "macbook air.jpg",
+        "apple watch": "watch.jpg",
+        "iphone 14 pro max": "14 pro max.jpg",
+        "iphone 15 pro max": "Apple15.jpg",
+        "iphone 17 pro max": "17 pro max .png",
+        "iphone 16 pro max": "16 pro max.jpg",
+        "airpods max": "airpodsmax.jpg",
+        "mac mini": "mac mini.jpg",
+        "mac studio": "mac studıo.jpg",
+        "vision pro": "vison.jpg"
+    };
+
+    function resimYoluBul(urunAdi) {
+        const kucuk = urunAdi.toLowerCase().trim();
+        return resimEsleme[kucuk] || "default.jpg";
+    }
+
+    function sepetiGoster() {
+        const kapsayici = document.getElementById('sepet-urunleri');
+        const toplamSpan = document.getElementById('sepet-toplam');
+        kapsayici.innerHTML = '';
+
+        if (sepet.length === 0) {
+            kapsayici.innerHTML = `<div style="text-align: center; padding: 100px 0; font-size: 24px; color: #9ca3af;">Sepetiniz boş</div>`;
+            toplamSpan.textContent = '0 TL';
+            return;
+        }
+
+        let toplam = 0;
+
+        sepet.forEach(urun => {
+            const fiyat = parseInt(urun.price);
+            const urunToplam = fiyat * urun.quantity;
+            toplam += urunToplam;
+
+            const resim = resimYoluBul(urun.name);
+
+            const oge = document.createElement('div');
+            oge.className = 'sepet-ogesi';
+            oge.innerHTML = `
+                <img src="Images/${resim}" alt="${urun.name}" class="ogesi-resmi" 
+                     onerror="this.src='Images/default.jpg';">
+
+                <div class="ogesi-bilgi">
+                    <h3>${urun.name}</h3>
+                    <p>${urun.quantity} adet × ${fiyat.toLocaleString('tr-TR')} TL</p>
+                </div>
+
+                <div class="ogesi-fiyat-toplam">
+                    <p>${urunToplam.toLocaleString('tr-TR')} TL</p>
+                </div>
+            `;
+            kapsayici.appendChild(oge);
+        });
+
+        toplamSpan.textContent = toplam.toLocaleString('tr-TR') + ' TL';
+    }
+
+    document.getElementById('odeme-butonu').onclick = function() {
+        if (sepet.length === 0) {
+            alert("Sepetiniz boş!");
+            return;
+        }
+
+        const toplam = sepet.reduce((sum, urun) => sum + (parseInt(urun.price) * urun.quantity), 0);
+
+        if (confirm(`${toplam.toLocaleString('tr-TR')} TL tutarındaki ödeme yapılıyor...\nOnaylıyor musunuz?`)) {
+            alert("✅ Ödeme başarıyla tamamlandı!\nTeşekkür ederiz, siparişiniz hazırlanıyor.");
+            localStorage.removeItem('sepet');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        }
+    };
+
+    // Sayfa yüklendiğinde çalışır
+    sepetiGoster();
+</script>
+
+</body>
+</html>
